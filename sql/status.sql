@@ -1,4 +1,4 @@
-CREATE TABLE `status` (
+CREATE TABLE `collective`.`status` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) unsigned NOT NULL,
   `msg` varchar(255) NOT NULL,
