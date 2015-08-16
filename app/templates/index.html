@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title>Collective</title>
+  </head>
+  <body>
+    {% for status in statuses %}
+    <div><p>{{ status.user_id }} => {{ status.msg }} - <a>{{ status.link }}</a></p></div>
+    {% endfor %}
+  </body>
+</html>
