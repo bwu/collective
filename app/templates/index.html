@@ -6,6 +6,7 @@
   <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   </script>
+  {% if check_login %}
   <script>
     // This is called with the results from from FB.getLoginStatus().
     function statusChangeCallback(response) {
@@ -15,7 +16,7 @@
       // for FB.getLoginStatus().
       if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        testAPI();
+        login();
       } else if (response.status === 'not_authorized') {
         // The person is logged into Facebook, but not your app.
         document.getElementById('status').innerHTML = 'Please log ' +
@@ -75,23 +76,38 @@
 
     // Here we run a very simple test of the Graph API after login is
     // successful.  See statusChangeCallback() for when this call is made.
-    function testAPI() {
+    function login() {
       FB.api('/me', function(response) {
-        $.getJSON($SCRIPT_ROOT + '/_following', {
+        $.post($SCRIPT_ROOT + '/login', {
           id: response.id,
         }, function(data) {
-          console.log(data)
         });
       });
     }
   </script>
-  <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+  <fb:login-button id="login-button" scope="public_profile,email" onlogin="checkLoginState();">
   </fb:login-button>
-  <div id="status">
-  </div>
+  {% endif %}
+  <script>
+    $(document).ready(function() {
+      $( "#post" ).click(function() {
+        $.post($SCRIPT_ROOT + '/post', {
+          status: $("#status").val(),
+        }, function(response) {
+          if (response.error) {
+            console.log("Error!");
+          } else {
+            window.location = '/index'
+          }
+        });
+      });
+    });
+  </script>
+  <p><input id="status" type=text name=status>
+  <p><input id="post" type=submit>
   <body>
     {% for status in statuses %}
-    <div><p>{{ status.user_id }} => {{ status.msg }} - <a>{{ status.link }}</a></p></div>
+    <div><p>{{ status.user_id }} => {{ status.msg }} - <iframe src="https://embed.spotify.com/?uri={{ status.link }}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe></p></div>
     {% endfor %}
   </body>
 </html>
